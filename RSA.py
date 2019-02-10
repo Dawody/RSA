@@ -1,7 +1,7 @@
 from Crypto.Util import number
 from fractions import gcd
 import os
-
+import time
 
 
 #
@@ -38,9 +38,11 @@ def modinv(a, m):
     return x%m
 
 
-for i in range(0,1):
+f= open("output.dat","w+")
+
+for i in range (10,1000,10):
 #Generating very big prime numbers : https://stackoverflow.com/questions/35164881/generating-large-prime-numbers-with-py-crypto
-    n_length = 900
+    n_length = i
     p = number.getPrime(n_length, os.urandom)
     q = number.getPrime(n_length, os.urandom)
 
@@ -51,22 +53,21 @@ for i in range(0,1):
     fin = (p-1)*(q-1)
 ###################################################
 #----------------generate small (e)--------------
-    e =2
-    while (gcd(e,fin)-1):
-        if e<fin:
-            e=e+1
-        else:
-            raise Exception('ERROR can not find (e)')
+#    e =2
+#    while (gcd(e,fin)-1):
+#        if e<fin:
+#            e=e+1
+#        else:
+#            raise Exception('ERROR can not find (e)')
             
 
 #------------generate very big (e)---------------
-#    e = fin-1
-#    while (gcd(e,fin)-1):
-#        if e>1:
-#            e=e-1
-#        else:
-#            print("ERROR can not find (e)")
-#            quit()
+    e = fin-1
+    while (gcd(e,fin)-1):
+        if e>1:
+            e=e-1
+        else:
+            raise Exception('ERROR can not find (e)')
 #------------------------------------------------
 #    print("e=",e)
 ###################################################
@@ -74,18 +75,27 @@ for i in range(0,1):
     d = modinv(e, fin)
 
 
+    print("***i= ",i,"***")
     print("PU={e,n} = {",e,",",n,"}")
     print("PR={d,n} = {",d,",",n,"}")
     print("========================")
 
 #################################################
 #------------------encrypt-----------------------
-m=3
-print("m = ", m)
-c = pow(m,e,n)
-print("c = ", c)
+    start = time.time()
+    m=222
+    print("m = ", m)
+    c = pow(m,e,n)
+    print("c = ", c)
+    end = time.time()
+
 
 #------------------decrypt-----------------------
 #calculate the power for very large numbers : https://stackoverflow.com/questions/23759098/pow-or-for-very-large-number-in-python
-m = pow(c,d,n)
-print("m = ",m)
+    m = pow(c,d,n)
+    print("m = ",m)
+
+
+#################################################
+    f.write("%s %s\n" % (i,(end-start)))
+f.close()
