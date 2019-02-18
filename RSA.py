@@ -1,7 +1,9 @@
+
 from Crypto.Util import number
 from fractions import gcd
 import os
 import time
+import matplotlib.pyplot as plt
 
 
 #
@@ -22,14 +24,16 @@ import time
 #  M = C^d mod(n) : ciphertext, C
 ###################################################################################################
 #
-	
 
-#Calculate the mod_inverse : https://gist.github.com/ofaurax/6103869014c246f962ab30a513fb5b49
+
+
+#Calculate the mod_inverse
 def egcd(a, b):
     if a == 0:
         return (b, 0, 1)
-    g, y, x = egcd(b%a,a)
+    g, y, x = egcd(b%a, a)
     return (g, x - (b//a) * y, y)
+
 
 def modinv(a, m):
     g, x, y = egcd(a, m)
@@ -38,64 +42,144 @@ def modinv(a, m):
     return x%m
 
 
-f= open("output.dat","w+")
 
-for i in range (10,1000,10):
-#Generating very big prime numbers : https://stackoverflow.com/questions/35164881/generating-large-prime-numbers-with-py-crypto
-    n_length = i
-    p = number.getPrime(n_length, os.urandom)
-    q = number.getPrime(n_length, os.urandom)
 
-#    print("p=",p,"\nq=",q)
+def RSA():
+    f= open("output.dat","w+")
+    bits_time = []
+    for i in range (10,500,10):
+        #Generating very big prime numbers
+        n_length = i
+        p = number.getPrime(n_length, os.urandom)
+        q = number.getPrime(n_length, os.urandom)
 
-    n=p*q
-#    print("n=",n)
-    fin = (p-1)*(q-1)
-###################################################
-#----------------generate small (e)--------------
-#    e =2
-#    while (gcd(e,fin)-1):
-#        if e<fin:
-#            e=e+1
-#        else:
-#            raise Exception('ERROR can not find (e)')
-            
+        n=p*q
+        fin = (p-1)*(q-1)
 
-#------------generate very big (e)---------------
-    e = fin-1
-    while (gcd(e,fin)-1):
-        if e>1:
-            e=e-1
+
+        e = fin-1
+        while (gcd(e,fin)-1):
+            if e>1:
+                e=e-1
+            else:
+                raise Exception('ERROR can not find (e)')
+
+
+        d = modinv(e, fin)
+
+
+
+        print("number of bits = ",i,"")
+        print("PU={e,n} = {",e,",",n,"}")
+        print("PR={d,n} = {",d,",",n,"}")
+        print("=============================================================================================================================================")
+
+
+
+
+###################################################################################################
+        #------------------encrypt-----------------------
+        start = time.time()
+        m=999999999
+        print("m = ", m)
+        c = pow(m,e,n)
+        print("c = ", c)
+        end = time.time()
+
+
+        #------------------decrypt-----------------------
+        #calculate the power for very large numbers : https://stackoverflow.com/questions/23759098/pow-or-for-very-large-number-in-python
+        m = pow(c,d,n)
+        print("m = ",m)
+        bits_time.append([i, end-start])
+
+###################################################################################################
+
+
+        f.write("%s %s\n" % (i,(end-start)))
+
+    x = [a for (a, b) in bits_time]
+    y = [b for (a, b) in bits_time]
+    plt.plot(x,y)
+    plt.show()
+    f.close()
+
+
+def brute(n):
+    i = 2
+    while i * i <= n:
+        if n % i:
+            i += 1
         else:
-            raise Exception('ERROR can not find (e)')
-#------------------------------------------------
-#    print("e=",e)
-###################################################
+            return i, n/i
 
-    d = modinv(e, fin)
+    return -1, -1
 
 
-    print("***i= ",i,"***")
-    print("PU={e,n} = {",e,",",n,"}")
-    print("PR={d,n} = {",d,",",n,"}")
-    print("========================")
 
-#################################################
-#------------------encrypt-----------------------
-    start = time.time()
-    m=222
-    print("m = ", m)
-    c = pow(m,e,n)
-    print("c = ", c)
-    end = time.time()
+def choosenCipher(c,e,d,n):
+    m = pow(c*pow(2,e,n), d, n)/2
+    return m
 
 
-#------------------decrypt-----------------------
-#calculate the power for very large numbers : https://stackoverflow.com/questions/23759098/pow-or-for-very-large-number-in-python
-    m = pow(c,d,n)
-    print("m = ",m)
+
+def brute_force():
+    f= open("bruteforce.dat","w+")
+    bits_time = []
+    for i in range (10,25,1):
+
+        #Generating very big prime numbers :
+        n_length = i
+        p = number.getPrime(n_length, os.urandom)
+        q = number.getPrime(n_length, os.urandom)
+
+        n=p*q
+
+        fin = (p-1)*(q-1)
+
+        e = fin-1
+        while (gcd(e,fin)-1):
+            if e>1:
+                e=e-1
+            else:
+                raise Exception('ERROR can not find (e)')
 
 
-#################################################
-    f.write("%s %s\n" % (i,(end-start)))
-f.close()
+        d = modinv(e, fin)
+
+        print("number of bits = ",i,"")
+        print("PU={e,n} = {",e,",",n,"}")
+        print("PR={d,n} = {",d,",",n,"}")
+        start = time.time()
+        p, q =brute(n)
+        if p==-1 or q==-1:
+            print("ERROR")
+        else:
+            print("cracked n=", p*q)
+        print("========================")
+        end = time.time()
+        bits_time.append([i, end-start])
+
+
+            #------------------encrypt-----------------------
+        start = time.time()
+        m=222
+        print("m = ", m)
+        c = pow(m,e,n)
+        print("c = ", c)
+        end = time.time()
+
+        print("choosen cipher:",choosenCipher(c,e,d,n))
+
+        f.write("%s %s\n" % (i,(end-start)))
+
+    f.close()
+    x = [a for (a, b) in bits_time]
+    y = [b for (a, b) in bits_time]
+    plt.plot(x,y)
+    plt.show()
+
+
+RSA()
+brute_force()
+
