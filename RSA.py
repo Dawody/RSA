@@ -88,7 +88,7 @@ def RSA():
 
 
         #------------------decrypt-----------------------
-        #calculate the power for very large numbers : https://stackoverflow.com/questions/23759098/pow-or-for-very-large-number-in-python
+        #pow(x,y,z) : With two arguments, equivalent to x**y.  With three arguments,equivalent to (x**y) % z
         m = pow(c,d,n)
         print("m = ",m)
         bits_time.append([i, end-start])
