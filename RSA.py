@@ -47,7 +47,7 @@ def modinv(a, m):
 def RSA():
     f= open("output.dat","w+")
     bits_time = []
-    for i in range (10,500,10):
+    for i in range (5,500,10):
         #Generating very big prime numbers
         n_length = i
         p = number.getPrime(n_length, os.urandom)
@@ -69,7 +69,7 @@ def RSA():
 
 
 
-        print("number of bits = ",i,"")
+        print("number of bits = ",i*2,"")
         print("PU={e,n} = {",e,",",n,"}")
         print("PR={d,n} = {",d,",",n,"}")
         print("=============================================================================================================================================")
@@ -80,7 +80,7 @@ def RSA():
 ###################################################################################################
         #------------------encrypt-----------------------
         start = time.time()
-        m=999999999
+        m=9999
         print("m = ", m)
         c = pow(m,e,n)
         print("c = ", c)
@@ -91,7 +91,7 @@ def RSA():
         #pow(x,y,z) : With two arguments, equivalent to x**y.  With three arguments,equivalent to (x**y) % z
         m = pow(c,d,n)
         print("m = ",m)
-        bits_time.append([i, end-start])
+        bits_time.append([i*2, end-start])
 
 ###################################################################################################
 
