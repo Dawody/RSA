@@ -1,9 +1,9 @@
 Dependences :
 1. python
 2. pycrypto # install it by pip ($sudo pip install pycrypto) --i used it to generate pig prime numbers
-3. gnu plot
+
 
 
 Execution :
 after installing the dependences; just run the following command
-$./ploter
+$python RSA.py
