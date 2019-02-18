@@ -45,7 +45,6 @@ def modinv(a, m):
 
 
 def RSA():
-    f= open("output.dat","w+")
     bits_time = []
     for i in range (5,500,10):
         #Generating very big prime numbers
@@ -96,13 +95,11 @@ def RSA():
 ###################################################################################################
 
 
-        f.write("%s %s\n" % (i,(end-start)))
 
     x = [a for (a, b) in bits_time]
     y = [b for (a, b) in bits_time]
     plt.plot(x,y)
     plt.show()
-    f.close()
 
 
 def brute(n):
@@ -124,7 +121,6 @@ def choosenCipher(c,e,d,n):
 
 
 def brute_force():
-    f= open("bruteforce.dat","w+")
     bits_time = []
     for i in range (10,25,1):
 
@@ -171,9 +167,7 @@ def brute_force():
 
         print("choosen cipher:",choosenCipher(c,e,d,n))
 
-        f.write("%s %s\n" % (i,(end-start)))
 
-    f.close()
     x = [a for (a, b) in bits_time]
     y = [b for (a, b) in bits_time]
     plt.plot(x,y)
